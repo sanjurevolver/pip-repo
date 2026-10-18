@@ -122,6 +122,23 @@ pytest
 
 > Note: `pip-repro` warns when a package has no compatible wheel for the chosen Python version and platform. That is a compatibility risk signal, not a promise that installation always fails.
 
+## Contributing
+
+Contributions are welcome. To keep the project high quality:
+
+1. Fork the repo and create a feature branch.
+2. Set up the project locally using the development install steps above.
+3. Run the formatted lint and tests before opening a PR.
+4. Keep the CLI output and docs aligned with real behavior.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor workflow.
+
+## Security
+
+If you discover a vulnerability or unsafe dependency issue, please report it privately rather than opening a public issue.
+
+See [SECURITY.md](SECURITY.md) for the disclosure process.
+
 ## Release notes
 
 See [RELEASE_NOTES_v0.1.0.md](RELEASE_NOTES_v0.1.0.md) for the initial release summary.

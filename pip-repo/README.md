@@ -1,26 +1,92 @@
 # pip-repro
 
+> A Python dependency audit CLI for preventing future install breakage before it reaches CI or production.
+
+<div align="center">
+
 [![CI](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-`pip-repro` is a lightweight Python CLI for catching dependency risk before it becomes a deployment surprise. It audits requirements files and `pyproject.toml` declarations for the problems that often slip past a normal install check: yanked releases, missing wheels for a target runtime, and pins that look valid today but break later on a newer Python or CI environment.
+</div>
 
-Built for developers and teams that want a practical safety check before dependencies drift into production.
+<p align="center">
+  <img src="https://img.shields.io/badge/CLI-Audit%20Dependencies-4f46e5" alt="CLI audit dependencies" />
+  <img src="https://img.shields.io/badge/Use-Requirements%20%26%20pyproject.toml-10b981" alt="Requirements and pyproject support" />
+  <img src="https://img.shields.io/badge/Goal-Prevent%20future%20install%20breaks-f59e0b" alt="Prevent future install breaks" />
+</p>
 
-## Why teams use it
+<p align="center">
+  <strong>Audit Python dependency risk before it reaches CI or production.</strong>
+</p>
+
+<table>
+  <tr>
+    <td align="center"><strong>Problem</strong><br>Dependency issues often pass a normal install and break later in CI, upgrades, or production.</td>
+    <td align="center"><strong>Solution</strong><br>pip-repro audits dependency files and highlights compatibility risk before it becomes a deployment problem.</td>
+    <td align="center"><strong>Impact</strong><br>Better dependency hygiene, safer upgrades, and earlier signals for risky Python environments.</td>
+  </tr>
+</table>
+
+`pip-repro` is a lightweight Python CLI for catching dependency risk before it becomes a deployment surprise. It inspects requirements files and `pyproject.toml` declarations for the kinds of issues that often slip past a normal install check: yanked releases, missing wheels for a target runtime, and pins that look safe today but fail later on newer Python or CI environments.
+
+Built for developers and teams who want a practical pre-flight check before dependency drift turns into a production problem.
+
+## Architecture
+
+```text
++-------------------+      +----------------------+      +----------------------+
+| Dependency file   | ---> | pip-repro parser     | ---> | Package metadata     |
+| requirements.txt  |      | + validator          |      | PyPI / wheel check   |
+| pyproject.toml   |      +----------------------+      +----------------------+
++-------------------+                                            |
+                                                                  v
+                                                       +----------------------+
+                                                       | Risk analysis        |
+                                                       | - yanked versions    |
+                                                       | - wheel mismatch     |
+                                                       | - Python target risk |
+                                                       +----------+-----------+
+                                                                  |
+                                                                  v
+                                                       +----------------------+
+                                                       | Console / JSON       |
+                                                       | report + guidance    |
+                                                       +----------------------+
+```
+
+The flow is intentionally simple: parse input, inspect package metadata, evaluate compatibility risk, and output actionable remediation guidance.
+
+## How it works
+
+1. Parse dependency declarations from `requirements.txt` or `pyproject.toml`
+2. Fetch package metadata and compatibility facts from PyPI
+3. Check for yanked versions, unsupported Python targets, and missing wheel support
+4. Surface a report with risk severity and recommended next steps
+
+## Feature highlights
+
+<table>
+  <tr>
+    <td align="center"><strong>Dependency audit</strong><br>Review dependency files before they drift into production.</td>
+    <td align="center"><strong>Wheel compatibility</strong><br>Flag packages that lack support for the target runtime.</td>
+    <td align="center"><strong>Actionable output</strong><br>Get clear guidance instead of vague warnings.</td>
+  </tr>
+</table>
+
+## Why it matters
 
 - catches compatibility risk before it reaches CI or production
 - surfaces actionable remediation guidance instead of vague warnings
 - works with common Python dependency sources and lockfile-style workflows
 - gives both human-readable reports and JSON output for automation
 
-## What it catches
+## What it detects
 
-- Detects yanked or unsupported package versions
-- Checks whether a wheel exists for the target Python version and platform
-- Surfaces risk before a dependency lock breaks during a later install
-- Produces actionable fix recommendations instead of vague warnings
+- yanked or unsupported package versions
+- missing wheels for the target Python version and platform
+- dependency risk before a lockfile breaks in a later install
+- upgrade paths with clear, actionable recommendations
 
 ## Installation
 
@@ -54,7 +120,7 @@ Then install the project and development dependencies:
 python -m pip install -e ".[dev]"
 ```
 
-## Quick usage
+## Quick start
 
 ```bash
 pip-repro audit requirements.txt
@@ -63,9 +129,9 @@ pip-repro audit requirements.txt --python 3.14
 pip-repro audit requirements.txt --json
 ```
 
-## Demo / project snapshot
+## Demo
 
-The project is intentionally small, fast, and easy to run locally. This makes it a strong fit for portfolio work, internal tooling, and early-stage dependency governance.
+The project is intentionally small, fast, and easy to run locally. It is a strong fit for portfolio work, internal tooling, and early-stage dependency governance.
 
 ```bash
 pip-repro audit examples/requirements-risky.txt
@@ -73,7 +139,7 @@ pip-repro audit examples/requirements-risky.txt
 
 This produces a concise report that highlights compatibility risk with clear next steps.
 
-## Example report
+## Example output
 
 The CLI produces a readable summary like this for a risky dependency file. The warning is about a missing compatible wheel for the selected target environment, not necessarily a guaranteed install failure. In some cases, pip may still build from source.
 
@@ -113,7 +179,7 @@ Summary: 0 critical, 4 warning, 0 ok
 - `1`: warnings were found
 - `2`: critical issues were found
 
-## CI and quality checks
+## Quality checks
 
 This project runs automated quality checks in GitHub Actions:
 
@@ -143,10 +209,10 @@ pytest
 
 Contributions are welcome. To keep the project high quality:
 
-1. Fork the repo and create a feature branch.
-2. Set up the project locally using the development install steps above.
-3. Run the formatted lint and tests before opening a PR.
-4. Keep the CLI output and docs aligned with real behavior.
+1. fork the repo and create a feature branch
+2. set up the project locally using the steps above
+3. run the format, lint, type-check, and tests before filing a PR
+4. keep CLI output and docs aligned with real behavior
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor workflow.
 

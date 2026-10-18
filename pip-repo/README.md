@@ -31,34 +31,34 @@ cd pip-repo
 python -m venv .venv
 ```
 
-Then activate the environment:
+Activate the environment:
 
 ```bash
-# macOS / Linux
-source .venv/bin/activate
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
 
-# Windows (PowerShell)
-.\.venv\Scripts\Activate.ps1
+# macOS/Linux
+source .venv/bin/activate
 ```
 
-Finally install the project and development extras:
+Then install the project and development dependencies:
 
 ```bash
-python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-## Quick start
+## Quick usage
 
 ```bash
-pip-repro --help
-pip-repro audit examples/requirements-risky.txt
-pip-repro audit examples/pyproject-risky.toml
+pip-repro audit requirements.txt
+pip-repro audit pyproject.toml
+pip-repro audit requirements.txt --python 3.14
+pip-repro audit requirements.txt --json
 ```
 
 ## Example report
 
-The CLI produces a readable summary like this for a risky dependency file:
+The CLI produces a readable summary like this for a risky dependency file. The warning is about a missing compatible wheel for the selected target environment, not necessarily a guaranteed install failure. In some cases, pip may still build from source.
 
 ```bash
 pip-repro audit examples/requirements-risky.txt
@@ -119,6 +119,8 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 pytest
 ```
+
+> Note: `pip-repro` warns when a package has no compatible wheel for the chosen Python version and platform. That is a compatibility risk signal, not a promise that installation always fails.
 
 ## Release notes
 

@@ -1,0 +1,5 @@
+# Example file with pinned versions that may become risky over time
+requests==2.26.0
+django==4.2.1
+pandas==1.5.0
+urllib3==1.26.18

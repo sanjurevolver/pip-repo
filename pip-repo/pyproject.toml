@@ -5,12 +5,23 @@ build-backend = "hatchling.build"
 [project]
 name = "pip-repro"
 version = "0.1.0"
-description = "Audit Python lockfiles for future installability — yanked versions, missing wheels, Python-version breakage."
+description = "Audit Python dependency files for future installability, yanked versions, and Python compatibility risks."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
-authors = [{ name = "Your Name", email = "you@example.com" }]
-keywords = ["pip", "dependencies", "reproducibility", "audit", "pypi"]
+authors = [{ name = "sanjurevolver", email = "sanjurevolver@example.com" }]
+keywords = [
+    "python",
+    "pip",
+    "pypi",
+    "dependency-management",
+    "dependencies",
+    "packaging",
+    "security",
+    "ci",
+    "cli",
+    "audit",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -18,6 +29,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "typer>=0.12",
@@ -44,8 +56,10 @@ dev = [
 pip-repro = "pip_repro.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/you/pip-repro"
-Issues = "https://github.com/you/pip-repro/issues"
+Homepage = "https://github.com/sanjurevolver/pip-repo"
+Repository = "https://github.com/sanjurevolver/pip-repo"
+Issues = "https://github.com/sanjurevolver/pip-repo/issues"
+Documentation = "https://github.com/sanjurevolver/pip-repo/blob/main/README.md"
 
 [tool.ruff]
 line-length = 100

@@ -1,0 +1,6 @@
+[project]
+dependencies = [
+  "django==4.2.1",
+  "numpy==1.24.0",
+  "urllib3==1.26.18"
+]

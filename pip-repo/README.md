@@ -4,11 +4,18 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-`pip-repro` audits Python dependency files for the kinds of installability problems that often slip past a normal install check: yanked releases, missing wheels for a target runtime, and pins that look valid today but fail for future environments.
+`pip-repro` is a lightweight Python CLI for catching dependency risk before it becomes a deployment surprise. It audits requirements files and `pyproject.toml` declarations for the problems that often slip past a normal install check: yanked releases, missing wheels for a target runtime, and pins that look valid today but break later on a newer Python or CI environment.
 
-It is designed for requirements files and `pyproject.toml` declarations, helping teams catch risky dependencies before they hit CI or production.
+Built for developers and teams that want a practical safety check before dependencies drift into production.
 
-## Why it helps
+## Why teams use it
+
+- catches compatibility risk before it reaches CI or production
+- surfaces actionable remediation guidance instead of vague warnings
+- works with common Python dependency sources and lockfile-style workflows
+- gives both human-readable reports and JSON output for automation
+
+## What it catches
 
 - Detects yanked or unsupported package versions
 - Checks whether a wheel exists for the target Python version and platform
@@ -55,6 +62,16 @@ pip-repro audit pyproject.toml
 pip-repro audit requirements.txt --python 3.14
 pip-repro audit requirements.txt --json
 ```
+
+## Demo / project snapshot
+
+The project is intentionally small, fast, and easy to run locally. This makes it a strong fit for portfolio work, internal tooling, and early-stage dependency governance.
+
+```bash
+pip-repro audit examples/requirements-risky.txt
+```
+
+This produces a concise report that highlights compatibility risk with clear next steps.
 
 ## Example report
 
@@ -139,9 +156,17 @@ If you discover a vulnerability or unsafe dependency issue, please report it pri
 
 See [SECURITY.md](SECURITY.md) for the disclosure process.
 
-## Release notes
+## Changelog
 
-See [RELEASE_NOTES_v0.1.0.md](RELEASE_NOTES_v0.1.0.md) for the initial release summary.
+See [CHANGELOG.md](CHANGELOG.md) for the release history and project updates.
+
+## Launch note
+
+See [PROJECT_LAUNCH.md](PROJECT_LAUNCH.md) for a short GitHub/social-ready launch summary.
+
+## Release process
+
+This repo includes a tag-based GitHub release workflow in [.github/workflows/release.yml](.github/workflows/release.yml).
 
 ## License
 

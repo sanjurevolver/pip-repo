@@ -14,6 +14,7 @@ def render_table(findings: list[Finding]) -> None:
     table.add_column("Package")
     table.add_column("Version")
     table.add_column("Issue")
+    table.add_column("Recommended fix")
 
     for finding in findings:
         table.add_row(
@@ -21,6 +22,7 @@ def render_table(findings: list[Finding]) -> None:
             finding.dependency.name,
             finding.dependency.pinned_version or "—",
             finding.message,
+            finding.recommendation or "—",
         )
 
     console = Console(emoji=False)
@@ -41,6 +43,7 @@ def render_json(findings: list[Finding]) -> None:
                     "version": finding.dependency.pinned_version,
                     "severity": finding.severity.value,
                     "message": finding.message,
+                    "recommendation": finding.recommendation,
                 }
                 for finding in findings
             ],

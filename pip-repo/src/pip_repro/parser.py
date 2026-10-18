@@ -2,9 +2,30 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from packaging.requirements import Requirement
+from packaging.requirements import InvalidRequirement, Requirement
 
 from .models import Dependency
+
+
+def _parse_requirement_line(line: str) -> Dependency | None:
+    """Parse one requirement line while tolerating malformed entries."""
+    try:
+        req = Requirement(line)
+    except InvalidRequirement:
+        return None
+
+    pinned = None
+    for spec in req.specifier:
+        if spec.operator == "==":
+            pinned = spec.version
+            break
+
+    return Dependency(
+        name=req.name,
+        specifier=str(req.specifier),
+        pinned_version=pinned,
+        marker=str(req.marker) if req.marker else None,
+    )
 
 
 def parse_requirements_txt(path: Path) -> list[Dependency]:
@@ -14,15 +35,10 @@ def parse_requirements_txt(path: Path) -> list[Dependency]:
         line = raw.split("#", 1)[0].strip()
         if not line or line.startswith(("-r", "-e", "--")):
             continue
-        req = Requirement(line)
-        pinned = None
-        for spec in req.specifier:
-            if spec.operator == "==":
-                pinned = spec.version
-                break
-        deps.append(
-            Dependency(name=req.name, specifier=str(req.specifier), pinned_version=pinned)
-        )
+
+        dep = _parse_requirement_line(line)
+        if dep is not None:
+            deps.append(dep)
     return deps
 
 
@@ -40,15 +56,9 @@ def parse_pyproject(path: Path) -> list[Dependency]:
 
     deps: list[Dependency] = []
     for raw in data.get("project", {}).get("dependencies", []):
-        req = Requirement(raw)
-        pinned = None
-        for spec in req.specifier:
-            if spec.operator == "==":
-                pinned = spec.version
-                break
-        deps.append(
-            Dependency(name=req.name, specifier=str(req.specifier), pinned_version=pinned)
-        )
+        dep = _parse_requirement_line(raw)
+        if dep is not None:
+            deps.append(dep)
     return deps
 
 

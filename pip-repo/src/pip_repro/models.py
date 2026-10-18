@@ -15,6 +15,7 @@ class Dependency:
     name: str
     specifier: str
     pinned_version: str | None = None
+    marker: str | None = None
 
 
 @dataclass(frozen=True)
@@ -24,3 +25,6 @@ class Finding:
     dependency: Dependency
     severity: Severity
     message: str
+    recommendation: str = ""
+    score: int = 0
+    confidence: str = "medium"

@@ -17,9 +17,12 @@ class PyPIClient:
         await self._client.aclose()
 
     async def get_project(self, name: str) -> dict:
-        response = await self._client.get(f"{self.BASE}/{name}/json")
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = await self._client.get(f"{self.BASE}/{name}/json")
+            response.raise_for_status()
+            return response.json()
+        except (httpx.HTTPError, ValueError):
+            return {}
 
     async def get_many(self, names: list[str]) -> dict[str, dict]:
         results = await asyncio.gather(

@@ -11,3 +11,6 @@ dist/
 .coverage
 htmlcov/
 .env
+*.ppt
+*.pptx
+*.pptm

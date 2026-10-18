@@ -1,15 +1,19 @@
 # pip-repro
 
-**Audit Python lockfiles for future installability.**
+[![CI](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml)
 
-`pip-audit` checks security. `pip-tools` checks today's resolution.
-`pip-repro` checks whether your lockfile will *still* install in 3 years.
+Audit Python dependency files for future installability and compatibility issues.
 
-## The problem
+pip-repro helps you catch dependency problems before they break installs in CI, local dev, or production. It checks for:
 
-PyPI allows authors to **yank** versions. Wheels get deleted. Python moves forward.
-Your pinned `django==4.2.1` might install cleanly today — and silently resolve to a
-different version a year from now. `pip-repro` catches this **before** it bites you.
+- yanked versions on PyPI
+- missing wheels for the target Python version
+- packages that are not installable on newer Python releases
+- dependency metadata that is valid today but risky long term
+
+## Why this project exists
+
+A project may look healthy when a lockfile is first created, but PyPI changes over time. Packages get yanked, wheels disappear, and Python releases move forward. pip-repro makes these risks visible early.
 
 ## Install
 
@@ -20,48 +24,53 @@ pip install pip-repro
 ## Usage
 
 ```bash
-# Audit a requirements.txt against the current Python
+# Audit a requirements.txt file
 pip-repro audit requirements.txt
 
-# Check for future Python compatibility
+# Audit a pyproject.toml file
+pip-repro audit pyproject.toml
+
+# Check compatibility for a future Python version
 pip-repro audit requirements.txt --python 3.14
 
-# Machine-readable output for CI
-pip-repro audit requirements.txt --json | jq
-
-# Works with pyproject.toml too
-pip-repro audit pyproject.toml
+# Emit machine-readable JSON
+pip-repro audit requirements.txt --json
 ```
-
-## What it catches
-
-| Severity | Meaning |
-|---|---|
-| 🔴 CRITICAL | Pinned version yanked or missing on PyPI |
-| 🟡 WARNING  | No wheel for target Python; sdist-only install |
-| 🟢 OK       | Healthy |
 
 ## Exit codes
 
-- `0` — all OK (safe for CI)
-- `1` — warnings present
-- `2` — critical issues (CI should fail)
+- `0`: no issues found
+- `1`: warnings were found
+- `2`: critical issues were found
+
+## Example output
+
+```text
+Package             Status    Reason
+------------------  --------  -------------------------------
+requests            OK        available and compatible
+numpy               WARNING   no wheel for Python 3.14
+django              CRITICAL  version is yanked on PyPI
+```
 
 ## Development
 
 ```bash
-git clone https://github.com/you/pip-repro
-cd pip-repro
-python -m venv .venv && source .venv/bin/activate
+git clone https://github.com/sanjurevolver/pip-repo.git
+cd pip-repo
+python -m venv .venv
+source .venv/bin/activate   # or .venv\Scripts\activate on Windows
 pip install -e ".[dev]"
-pre-commit install
 pytest
 ```
 
-## Status
+## Project status
 
-**v0.1.0 — MVP.** Transitive audit and auto-fix are planned for v0.2.
-See [SKILL.md](SKILL.md) for the full project roadmap.
+Current version: `0.1.0`
+
+This repository is the project home for the pip-repro CLI tool.
+
+See [RELEASE_NOTES_v0.1.0.md](RELEASE_NOTES_v0.1.0.md) for the initial release summary.
 
 ## License
 

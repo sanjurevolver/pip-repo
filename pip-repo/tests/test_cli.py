@@ -1,9 +1,6 @@
-from pathlib import Path
-
 from typer.testing import CliRunner
 
 from pip_repro.cli import app
-from pip_repro.models import Severity
 
 runner = CliRunner()
 

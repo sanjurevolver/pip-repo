@@ -13,9 +13,7 @@ FAKE = {
 @pytest.mark.asyncio
 @respx.mock
 async def test_get_project():
-    respx.get("https://pypi.org/pypi/django/json").mock(
-        return_value=httpx.Response(200, json=FAKE)
-    )
+    respx.get("https://pypi.org/pypi/django/json").mock(return_value=httpx.Response(200, json=FAKE))
     async with PyPIClient() as client:
         data = await client.get_project("django")
     assert data["info"]["name"] == "django"

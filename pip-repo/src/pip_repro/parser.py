@@ -44,12 +44,7 @@ def parse_requirements_txt(path: Path) -> list[Dependency]:
 
 def parse_pyproject(path: Path) -> list[Dependency]:
     """Parse PEP 621 dependencies from pyproject.toml."""
-    import sys
-
-    if sys.version_info >= (3, 11):
-        import tomllib
-    else:
-        import tomli as tomllib  # type: ignore[no-redef]
+    import tomllib
 
     with path.open("rb") as fh:
         data = tomllib.load(fh)

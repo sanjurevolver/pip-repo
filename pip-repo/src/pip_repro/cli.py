@@ -1,10 +1,11 @@
 import asyncio
 from pathlib import Path
+from typing import Annotated
 
 import typer
 
 from .auditor import Auditor
-from .models import Severity
+from .models import Finding, Severity
 from .parser import parse_file
 from .pypi import PyPIClient
 from .reporter import render_json, render_table
@@ -19,15 +20,18 @@ def main() -> None:
 
 @app.command(name="audit")
 def audit(
-    path: Path = typer.Argument(..., exists=True, dir_okay=False),
-    python_version: str = typer.Option("3.12", "--python", help="Target Python version"),
-    as_json: bool = typer.Option(False, "--json", help="Machine-readable output"),
+    path: Annotated[Path, typer.Argument(exists=True, dir_okay=False)],
+    python_version: Annotated[
+        str,
+        typer.Option("--python", help="Target Python version"),
+    ] = "3.12",
+    as_json: Annotated[bool, typer.Option("--json", help="Machine-readable output")] = False,
 ) -> None:
     """Audit a requirements.txt or pyproject.toml file."""
 
     deps = parse_file(path)
 
-    async def run() -> list:
+    async def run() -> list[Finding]:
         async with PyPIClient() as client:
             return await Auditor(client, python_version).audit(deps)
 

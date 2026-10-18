@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -16,20 +16,20 @@ class PyPIClient:
     async def __aexit__(self, *exc: Any) -> None:
         await self._client.aclose()
 
-    async def get_project(self, name: str) -> dict:
+    async def get_project(self, name: str) -> dict[str, Any]:
         try:
             response = await self._client.get(f"{self.BASE}/{name}/json")
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
         except (httpx.HTTPError, ValueError):
             return {}
 
-    async def get_many(self, names: list[str]) -> dict[str, dict]:
+    async def get_many(self, names: list[str]) -> dict[str, dict[str, Any]]:
         results = await asyncio.gather(
             *(self.get_project(name) for name in names),
             return_exceptions=True,
         )
         return {
-            name: (result if not isinstance(result, Exception) else {})
-            for name, result in zip(names, results)
+            name: cast(dict[str, Any], result) if not isinstance(result, Exception) else {}
+            for name, result in zip(names, results, strict=False)
         }

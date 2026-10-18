@@ -1,6 +1,8 @@
+from typing import Any
+
 from packaging.markers import Marker
 from packaging.specifiers import SpecifierSet
-from packaging.tags import cpython_tags, generic_tags, parse_tag
+from packaging.tags import cpython_tags, generic_tags
 from packaging.utils import parse_wheel_filename
 
 from .models import Dependency, Finding, Severity
@@ -22,12 +24,12 @@ class Auditor:
         except Exception:
             return False
 
-    def _compatible_wheel_for_target(self, files: list[dict]) -> bool:
-        supported = set()
+    def _compatible_wheel_for_target(self, files: list[dict[str, object]]) -> bool:
+        supported: set[str] = set()
         try:
             major, minor = (int(part) for part in self.target_python.split(".")[:2])
-            supported.update(cpython_tags(python_version=(major, minor)))
-            supported.update(generic_tags())
+            supported.update(str(tag) for tag in cpython_tags(python_version=(major, minor)))
+            supported.update(str(tag) for tag in generic_tags())
         except Exception:
             return True
 
@@ -41,7 +43,7 @@ class Auditor:
                 _, _, _, wheel_tags = parse_wheel_filename(filename)
             except Exception:
                 continue
-            if any(tag in supported for tag in wheel_tags):
+            if any(str(tag) in supported for tag in wheel_tags):
                 return True
 
         return False
@@ -54,13 +56,15 @@ class Auditor:
         projects = await self.client.get_many(names)
         return [self._audit_one(dep, projects.get(dep.name, {})) for dep in deps]
 
-    def _audit_one(self, dep: Dependency, project: dict) -> Finding:
+    def _audit_one(self, dep: Dependency, project: dict[str, Any]) -> Finding:
         if dep.marker and self._marker_excludes_target(dep):
             return Finding(
                 dep,
                 Severity.OK,
                 f"marker {dep.marker} does not apply to Python {self.target_python}",
-                recommendation="no action needed; this dependency is excluded for the current environment",
+                recommendation=(
+                    "no action needed; this dependency is excluded for the current environment"
+                ),
                 score=self._severity_score(Severity.OK),
                 confidence="high",
             )
@@ -83,7 +87,10 @@ class Auditor:
                 dep,
                 Severity.CRITICAL,
                 "pinned version not found on PyPI",
-                recommendation=f"verify the package name or choose a published version of {dep.name} that supports Python {self.target_python}",
+                recommendation=(
+                    f"verify the package name or choose a published version of {dep.name} "
+                    f"that supports Python {self.target_python}"
+                ),
                 score=self._severity_score(Severity.CRITICAL),
                 confidence="high",
             )
@@ -93,7 +100,10 @@ class Auditor:
                 dep,
                 Severity.CRITICAL,
                 "pinned version is yanked",
-                recommendation=f"upgrade {dep.name} to a non-yanked release compatible with Python {self.target_python}",
+                recommendation=(
+                    f"upgrade {dep.name} to a non-yanked release compatible with Python "
+                    f"{self.target_python}"
+                ),
                 score=self._severity_score(Severity.CRITICAL),
                 confidence="high",
             )
@@ -119,7 +129,8 @@ class Auditor:
             )
 
         has_wheel = any(
-            file_info.get("packagetype") == "bdist_wheel" or str(file_info.get("filename", "")).endswith(".whl")
+            file_info.get("packagetype") == "bdist_wheel"
+            or str(file_info.get("filename", "")).endswith(".whl")
             for file_info in files
         )
         if not has_wheel:
@@ -127,7 +138,10 @@ class Auditor:
                 dep,
                 Severity.WARNING,
                 "sdist only; no wheel available",
-                recommendation=f"use a wheel-backed release for Python {self.target_python} or validate the source build in CI",
+                recommendation=(
+                    f"use a wheel-backed release for Python {self.target_python} or "
+                    "validate the source build in CI"
+                ),
                 score=self._severity_score(Severity.WARNING),
                 confidence="medium",
             )
@@ -137,7 +151,10 @@ class Auditor:
                 dep,
                 Severity.WARNING,
                 "wheel exists but no compatible wheel for the target environment",
-                recommendation=f"select a release of {dep.name} with a wheel compatible with Python {self.target_python} and the current platform",
+                recommendation=(
+                    f"select a release of {dep.name} with a wheel compatible with "
+                    f"Python {self.target_python} and the current platform"
+                ),
                 score=self._severity_score(Severity.WARNING),
                 confidence="medium",
             )

@@ -17,8 +17,8 @@ def test_parse_requirements_txt_handles_markers_and_invalid_lines(tmp_path):
     file = tmp_path / "requirements.txt"
     file.write_text(
         'django==4.2.1; python_version >= "3.12"\n'
-        'bad line without a valid requirement\n'
-        'requests==2.32.0\n',
+        "bad line without a valid requirement\n"
+        "requests==2.32.0\n",
         encoding="utf-8",
     )
 

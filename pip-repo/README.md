@@ -1,7 +1,5 @@
 # pip-repro
 
-[![CI](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjurevolver/pip-repo/actions/workflows/ci.yml)
-
 `pip-repro` is a Python CLI that audits dependency files for installability risks that show up later, not just during the initial install.
 
 It helps teams catch issues such as:

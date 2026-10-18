@@ -1,0 +1,7 @@
+[project]
+name = "demo"
+version = "0.1.0"
+dependencies = [
+    "django==4.2.1",
+    "requests>=2.31",
+]
